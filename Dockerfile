@@ -19,7 +19,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Configure and install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -27,14 +27,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy the rest of the application code
+# Copy application files
 COPY . .
-
-# Install Composer dependencies
-RUN composer install --no-interaction --optimize-autoloader || true
 
 # Expose port 8000
 EXPOSE 8000
 
-# Start Laravel development server
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Start Laravel (ensure sqlite DB exists, permissions set, migrations run, start server)
+CMD ["sh", "-c", "mkdir -p database && touch database/database.sqlite && composer install --no-interaction --optimize-autoloader && chmod -R 777 storage bootstrap/cache database && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"]

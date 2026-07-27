@@ -16,11 +16,17 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $validated = $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-        ]);
+        ];
+
+        if ($request->has('password_confirmation')) {
+            $rules['password'] .= '|confirmed';
+        }
+
+        $validated = $request->validate($rules);
 
         $user = User::create([
             'name' => $validated['name'],
@@ -37,6 +43,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'role' => $user->role,
             ],
             'access_token' => $token,
             'token_type' => 'Bearer',
@@ -70,6 +77,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'role' => $user->role,
             ],
             'access_token' => $token,
             'token_type' => 'Bearer',
@@ -106,6 +114,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'role' => $user->role,
             ],
             'access_token' => $token,
             'token_type' => 'Bearer',
