@@ -5,6 +5,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TryOnHistoryController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,9 @@ Route::post('/google-login', [AuthController::class, 'googleLogin']);
 // Public Product Catalog Routes
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
+
+// Public Reviews List
+Route::get('/products/{id}/reviews', [ReviewController::class, 'index']);
 
 // Public Store History (nullable user_id inside controller)
 Route::post('/history', [TryOnHistoryController::class, 'store']);
@@ -29,7 +33,7 @@ Route::post('/products', [ProductController::class, 'store']);
 Route::put('/products/{id}', [ProductController::class, 'update']);
 Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
-// Favorites & Protected History Routes
+// Favorites, Protected History, & Verified Reviews Routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -41,6 +45,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/favorites/{productId}', [FavoriteController::class, 'destroy']);
 
     Route::get('/history', [TryOnHistoryController::class, 'index']);
+
+    // Review Actions
+    Route::get('/products/{id}/review-eligibility', [ReviewController::class, 'checkEligibility']);
+    Route::post('/reviews', [ReviewController::class, 'store']);
+    Route::put('/reviews/{id}', [ReviewController::class, 'update']);
+    Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
 });
 
 
