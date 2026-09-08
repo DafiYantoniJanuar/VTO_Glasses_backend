@@ -23,6 +23,7 @@ Route::get('/products/{id}/reviews', [ReviewController::class, 'index']);
 
 // Public Store History (nullable user_id inside controller)
 Route::post('/history', [TryOnHistoryController::class, 'store']);
+Route::post('/try-on-history', [TryOnHistoryController::class, 'store']);
 
 // Place checkout orders
 Route::post('/orders', [OrderController::class, 'store']);
@@ -45,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/favorites/{productId}', [FavoriteController::class, 'destroy']);
 
     Route::get('/history', [TryOnHistoryController::class, 'index']);
+    Route::get('/try-on-history', [TryOnHistoryController::class, 'index']);
 
     // Review Actions
     Route::get('/products/{id}/review-eligibility', [ReviewController::class, 'checkEligibility']);

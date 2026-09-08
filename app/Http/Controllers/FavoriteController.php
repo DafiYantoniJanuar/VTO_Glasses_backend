@@ -61,6 +61,7 @@ class FavoriteController extends Controller
             return response()->json([
                 'success' => true,
                 'is_favorited' => false,
+                'is_favorite' => false,
                 'message' => 'Produk telah dihapus dari favorit.'
             ]);
         } else {
@@ -71,6 +72,7 @@ class FavoriteController extends Controller
             return response()->json([
                 'success' => true,
                 'is_favorited' => true,
+                'is_favorite' => true,
                 'message' => 'Produk berhasil ditambahkan ke favorit.'
             ]);
         }
