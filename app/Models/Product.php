@@ -17,6 +17,8 @@ class Product extends Model
         'category',
         'description',
         'image',
+        'model_3d_url',
+        'stock',
         'best_seller',
         'rating',
         'reviews',
@@ -24,6 +26,7 @@ class Product extends Model
 
     protected $casts = [
         'price' => 'float',
+        'stock' => 'integer',
         'best_seller' => 'boolean',
         'rating' => 'float',
         'reviews' => 'integer',

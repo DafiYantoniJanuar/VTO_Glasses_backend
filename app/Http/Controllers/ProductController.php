@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -47,10 +48,21 @@ class ProductController extends Controller
             'category' => 'required|string|max:100',
             'description' => 'nullable|string',
             'image' => 'nullable|string',
+            'model_3d' => 'nullable|file|max:51200',
+            'stock' => 'nullable|integer|min:0',
             'best_seller' => 'boolean',
             'rating' => 'nullable|numeric|min:0|max:5',
             'reviews' => 'nullable|integer|min:0',
         ]);
+
+        if ($request->hasFile('model_3d')) {
+            $file = $request->file('model_3d');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/models', $filename);
+            $validated['model_3d_url'] = '/storage/models/' . $filename;
+        }
+
+        unset($validated['model_3d']);
 
         $product = Product::create($validated);
 
@@ -103,10 +115,25 @@ class ProductController extends Controller
             'category' => 'sometimes|required|string|max:100',
             'description' => 'nullable|string',
             'image' => 'nullable|string',
+            'model_3d' => 'nullable|file|max:51200',
+            'stock' => 'nullable|integer|min:0',
             'best_seller' => 'boolean',
             'rating' => 'nullable|numeric|min:0|max:5',
             'reviews' => 'nullable|integer|min:0',
         ]);
+
+        if ($request->hasFile('model_3d')) {
+            if ($product->model_3d_url) {
+                $oldPath = str_replace('/storage/models/', 'public/models/', $product->model_3d_url);
+                Storage::delete($oldPath);
+            }
+            $file = $request->file('model_3d');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/models', $filename);
+            $validated['model_3d_url'] = '/storage/models/' . $filename;
+        }
+
+        unset($validated['model_3d']);
 
         $product->update($validated);
 
@@ -129,6 +156,11 @@ class ProductController extends Controller
                 'status' => 'error',
                 'message' => 'Produk kacamata tidak ditemukan.'
             ], 404);
+        }
+
+        if ($product->model_3d_url) {
+            $path = str_replace('/storage/models/', 'public/models/', $product->model_3d_url);
+            Storage::delete($path);
         }
 
         $product->delete();
